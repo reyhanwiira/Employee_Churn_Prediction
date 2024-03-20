@@ -36,33 +36,10 @@ df = pd.DataFrame({'Age',
 def App2():
     def process_data(dataset):
         # Load the model and perform predictions
-        with open('./pages/pipeline.pkl', 'rb') as f:
-            pipeline = pickle.load(f)
+        with open('./pages/pipeline_csv.pkl', 'rb') as f:
+            pipeline1 = pickle.load(f)
 
-            # # Select the categorical columns for one-hot encoding
-            # categorical_columns = [
-
-            # ]
-
-            # # Drop the original categorical columns from the DataFrame
-            # df_encoded = df.drop(columns=categorical_columns)
-
-            # # Initialize LabelEncoder
-            # label_encoder = LabelEncoder()
-
-            # # Encode 'Gender', 'OverTime', and 'Attrition'
-            # df_encoded['Attrition_encoded'] = label_encoder.fit_transform(dataset['Attrition'])
-
-            # # Convert to int64
-            # # df_encoded['Attrition_encoded'] = df_encoded['Attrition_encoded'].astype('int64')
-
-            # # Rename 'Attrition_encoded', 'Gender_encoded', 'OverTime_encoded' to 'Attrition', 'Gender', 'OverTime'
-            # final_df = df_encoded.rename(columns={'Attrition_encoded': 'Attrition'})
-
-            # # Drop the encoded columns
-            # final_df.drop(columns=['Attrition'], inplace=True)
-
-        result = pipeline.predict(dataset)
+        result = pipeline1.predict(dataset)
         
         # Assign predictions based on result
         y_pred = ["Your employee may leave the company. (╥﹏╥)" if pred == 1 
@@ -130,6 +107,33 @@ def App2():
 
             # Process the data
             dataset.rename(columns={'JobLevel_updated': 'JobLevel'}, inplace=True)
+
+            categorical_columns = ['BusinessTravel', 'Department', 'Gender', 'MaritalStatus', 'OverTime']
+
+            # Create an instance of OneHotEncoder
+            onehot_encoder = OneHotEncoder(handle_unknown='ignore')
+
+            # Perform one-hot encoding on categorical features
+            encoded_features = onehot_encoder.fit_transform(dataset[categorical_columns])
+
+            # Get the names of the one-hot encoded features
+            encoded_feature_names = onehot_encoder.get_feature_names_out(categorical_columns)
+
+            # Convert the sparse matrix to a dense array
+            encoded_features_dense = encoded_features.toarray()
+
+            # Convert encoded features into DataFrame with the correct column names
+            encoded_df = pd.DataFrame(encoded_features_dense, columns=encoded_feature_names)
+
+            # Drop the original categorical columns from the DataFrame
+            df_encoded = df.drop(columns=categorical_columns)
+
+            # # Concatenate the encoded features with the original DataFrame
+            # dataset = pd.concat([df_encoded, encoded_df], axis=1)
+
+            # Rename 'Attrition_encoded', 'Gender_encoded', 'OverTime_encoded' to 'Attrition', 'Gender', 'OverTime'
+            dataset = df_encoded.rename(columns={'Attrition_encoded': 'Attrition'})
+            dataset = df_encoded.rename(columns={'OverTime_encoded': 'OverTime'})
 
             processed_data = process_data(dataset)
             
