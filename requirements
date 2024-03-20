@@ -1,5 +1,5 @@
 streamlit==1.16.0
-st-pages==0.4.5
+st-pages==0.4.4
 imbalanced-learn==0.8.0 
 pandas==1.5.1 
 scipy==1.7.3
