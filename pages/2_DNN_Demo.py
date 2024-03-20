@@ -4,7 +4,6 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import torch
-import torch
 import torch.nn as nn
 import time
 
@@ -179,8 +178,6 @@ def App2():
     uploaded_file = st.file_uploader("Choose a CSV file", type=["csv"])
     if uploaded_file is not None:
         try:
-            # Load the model
-            model = torch.load(PATH)
             model.eval()
                 
             # Read the CSV file into a pandas dataframe
