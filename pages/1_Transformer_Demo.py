@@ -1,13 +1,15 @@
 import streamlit as st
 import pandas as pd
 import pickle
+import time
+
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 
 st.set_page_config(page_title="Transformer Demo", page_icon="🐍", layout="wide")
 
-st.title("Employee Churn Prediction")
-st.subheader("Predict Employee Churn using Transformer Pipeline")
+st.title("Predict your Employee Churn using Transformer Pipeline")
 st.write("This is a simple Machine Learning Web App to predict employee churn and retain your best employees")
-
+st.write("Disclaimer: Don't rely too much on these results, expert judgment is still needed to see any invisible influences")
 df = pd.DataFrame({'Age',
                     'BusinessTravel',
                     'Department',
@@ -29,14 +31,122 @@ df = pd.DataFrame({'Age',
                     'RelationshipSatisfaction',
                     'EnvironmentSatisfaction',
 })
+      
+def App2():
+    def process_data(data):
+        # Load the model and perform predictions
+        with open('./pages/pipeline.pkl', 'rb') as f:
+            pipeline = pickle.load(f)
+        
+        result = pipeline.predict(data)
+        
+        # Assign predictions based on result
+        y_pred = ["Your employee may leave the company. (╥﹏╥)" if pred == 1 
+                  else "Your employee may stay in the company. ⸜(｡ ˃ ᵕ ˂ )⸝♡" for pred in result]
+        
+        # Add predicted target to the data
+        data['Predicted_target'] = y_pred
+        return data
+    
+    # Streamlit app
+    sample =   {'Age':[28, 30, 35, 40, 45, 50, 18, 20, 22],
+                'BusinessTravel':['Travel_Rarely', 'Travel_Frequently', 'Travel_Rarely', 'Travel_Rarely', 'Travel_Rarely', 'Travel_Rarely', 'Non-Travel', 'Non-Travel', 'Non-Travel'],
+                'Department':['HR', 'Corporate Functions', 'Sales', 'Delivery', 'Product', 'HR', 'Sales', 'Sales', 'Sales'],
+                'EducationField':'Bachelors',
+                'Gender':0,
+                'MaritalStatus':'Single',
+                'JobLevel':'L3',
+                'OverTime':1,
+                'JobInvolvement':3,
+                'PerformanceRating':3,
+                'MonthlyIncome':5000,
+                'TotalWorkingYears':10,
+                'TrainingTimesLastYear':2,
+                'WorkLifeBalance':3,
+                'YearsAtCompany':3,
+                'YearsInCurrentRole':3,
+                'YearsSinceLastPromotion':1,
+                'YearsWithCurrManager':3,
+                'JobSatisfaction':3,
+                'RelationshipSatisfaction':3,
+                'EnvironmentSatisfaction':3,
+    }
 
-def App1():
-    # Load the pre-trained model
-    with open('./pages/pipeline.pkl','rb') as f:
-        pipeline = pickle.load(f)
+    sample = pd.DataFrame(sample)
+    st.dataframe(sample)
 
-    # Function to show prediction result
-    def show_prediction():
+    # Create a button to go to link
+    # Define the URL
+    url = "./pages/HR Employee data.csv"
+
+    # Create a clickable link using markdown
+    st.markdown(f"[Link to HR Employee Attrition Dataset]({url})")
+
+    # Button to upload CSV file
+    uploaded_file = st.file_uploader("Choose a CSV file", type=["csv"])
+    if uploaded_file is not None:
+        try:
+            # Load data from CSV
+            data = pd.read_csv(uploaded_file)
+
+            # Checking the dataset if there any duplicate values
+            data.duplicated().any()
+            # Show the duplicates value
+            data[data.duplicated()]
+            # Drop the duplicate value
+            dataset = data.drop_duplicates()
+            
+            # Process the data
+            dataset.rename(columns={'JobLevel_updated': 'JobLevel'}, inplace=True)
+
+            label_encoders = LabelEncoder()
+
+            dataset['BusinessTravel_encoded'] = label_encoders.fit_transform(dataset['BusinessTravel'])
+            dataset['Department_encoded'] = label_encoders.fit_transform(dataset['Department'])
+            dataset['EducationField_encoded'] = label_encoders.fit_transform(dataset['EducationField'])
+            dataset['Gender_encoded'] = label_encoders.fit_transform(dataset['Gender'])
+            dataset['MaritalStatus_encoded'] = label_encoders.fit_transform(dataset['MaritalStatus'])
+            dataset['OverTime_encoded'] = label_encoders.fit_transform(dataset['OverTime'])
+            dataset['Attrition_encoded'] = label_encoders.fit_transform(dataset['Attrition'])
+
+            # Convert to int64
+            dataset['Gender'] = dataset['Gender_encoded'].astype('int64')
+            dataset['OverTime'] = dataset['OverTime_encoded'].astype('int64')
+            dataset['Attrition'] = dataset['Attrition_encoded'].astype('int64')
+            dataset['BusinessTravel'] = dataset['BusinessTravel_encoded'].astype('int64')
+            dataset['Department'] = dataset['Department_encoded'].astype('int64')
+            dataset['EducationField'] = dataset['EducationField_encoded'].astype('int64')
+            dataset['MaritalStatus'] = dataset['MaritalStatus_encoded'].astype('int64')
+
+            processed_data = process_data(dataset)
+            
+            # Save the processed data to a CSV file
+            st.write("Processed Data:")
+            st.write(processed_data)
+            st.write("Saving the processed data...")
+            with st.spinner('Wait for it...'):
+                time.sleep(5)
+            processed_data.to_csv('processed_data.csv', index=False)
+            st.success("Data saved successfully! ദ്ദി(˵ •̀ ᴗ - ˵ ) ✧")
+        except Exception as e:
+            st.error(f"Failed to open file: {e}")
+
+def save_file(data):
+    savepath = st.text_input("Enter file path to save (include.csv extension)")
+    if st.button("Save File"):
+        if savepath:
+            try:
+                data.to_csv(savepath, index=False)
+                st.success("File Saved Successfully ദ്ദി(˵ •̀ ᴗ - ˵ ) ✧")
+            except Exception as e:
+                st.error(f"Failed to save file:{e}")
+
+# Load the pre-trained model
+with open('./pages/pipeline.pkl','rb') as f:
+    pipeline = pickle.load(f)
+
+# Function to show prediction result
+def show_prediction():
         p1 = float(e1)
         p2 = str(e2)
         p3 = str(e3)
@@ -90,10 +200,16 @@ def App1():
             st.write("An employee may leave the organization.")
         else:
             st.write("An employee may stay with the organization.")
-    
-    col1, col2 = st.columns(2)
-    with col1.container():
-        with st.container():
+
+row1 = st.columns(1)
+row2 = st.columns(2)
+row3 = st.columns(1)
+row4 = st.columns(1)
+
+with row1[0]:
+    st.subheader("Single Prediction")
+with row2[0]:
+    with st.container(height=500):
             e1 = st.slider("Age", 18, 60, 30)
             e9 = st.slider("Job Involvement", 1, 4, 2)
             e10 = st.slider("Performance Score", 1, 5, 3)
@@ -130,9 +246,8 @@ def App1():
             
             options8 = ('No','Yes')
             e8 = st.selectbox("Over Time", options8)
-            e8 = {'No': 0, 'Yes': 1}[e8]  # Label encoding
-
-    with col2.container():
+            e8 = {'No': 0, 'Yes': 1}[e8]  # Label encoding    
+with row2[1]:
         user_inputs = {
                         'Age': [e1],
                         'BusinessTravel': [e2],
@@ -164,93 +279,19 @@ def App1():
 
         # Create a button to trigger prediction
         if st.button("Predict"):
+            progress_text = "Operation in progress. Please wait."
+            my_bar = st.progress(0, text=progress_text)
+
+            for percent_complete in range(100):
+                time.sleep(0.01)
+                my_bar.progress(percent_complete + 1, text=progress_text)
+            time.sleep(1)
+            my_bar.empty()
+            st.success('Done!')
             show_prediction()
-
-def App2():
-    def process_data(data):
-        # Load the model and perform predictions
-        with open('pipeline.pkl', 'rb') as f:
-            pipeline = pickle.load(f)
-        
-        result = pipeline.predict(data)
-        
-        # Assign predictions based on result
-        y_pred = ["Your employee may leave the company. (╥﹏╥)" if pred == 1 
-                  else "Your employee may stay in the company. ⸜(｡ ˃ ᵕ ˂ )⸝♡" for pred in result]
-        
-        # Add predicted target to the data
-        data['Predicted_target'] = y_pred
-        return data
-    
-    # Streamlit app
-    st.title("Predicting Employee Churn Using Machine Learning")
-    sample =   {'Age':[28, 30, 35, 40, 45, 50, 18, 20, 22],
-                'BusinessTravel':['Travel_Rarely', 'Travel_Frequently', 'Travel_Rarely', 'Travel_Rarely', 'Travel_Rarely', 'Travel_Rarely', 'Non-Travel', 'Non-Travel', 'Non-Travel'],
-                'Department':['HR', 'Corporate Functions', 'Sales', 'Delivery', 'Product', 'HR', 'Sales', 'Sales', 'Sales'],
-                'EducationField':'Bachelors',
-                'Gender':0,
-                'MaritalStatus':'Single',
-                'JobLevel':'L3',
-                'OverTime':1,
-                'JobInvolvement':3,
-                'PerformanceRating':3,
-                'MonthlyIncome':5000,
-                'TotalWorkingYears':10,
-                'TrainingTimesLastYear':2,
-                'WorkLifeBalance':3,
-                'YearsAtCompany':3,
-                'YearsInCurrentRole':3,
-                'YearsSinceLastPromotion':1,
-                'YearsWithCurrManager':3,
-                'JobSatisfaction':3,
-                'RelationshipSatisfaction':3,
-                'EnvironmentSatisfaction':3,
-    }
-
-    sample = pd.DataFrame(sample)
-    st.dataframe(sample)
-
-    # Create a button to go to link
-    # Define the URL
-    url = "https://www.kaggle.com/datasets/jash312/hr-employee-attrition-datasets?select=HR+Employee+data.csv"
-
-    # Create a clickable link using markdown
-    st.markdown(f"[Link to HR Employee Attrition Dataset]({url})")
-
-    # Button to upload CSV file
-    uploaded_file = st.file_uploader("Choose a CSV file", type=["csv"])
-    if uploaded_file is not None:
-        try:
-            # Load data from CSV
-            data = pd.read_csv(uploaded_file)
-            
-            # Process the data
-            processed_data = process_data(data)
-            
-            # Save the processed data to a CSV file
-            st.write("Processed Data:")
-            st.write(processed_data)
-            st.write("Saving the processed data...")
-            processed_data.to_csv('processed_data.csv', index=False)
-            st.success("Data saved successfully! ദ്ദി(˵ •̀ ᴗ - ˵ ) ✧")
-        except Exception as e:
-            st.error(f"Failed to open file: {e}")
-
-
-def save_file(data):
-    savepath = st.text_input("Enter file path to save (include.csv extension)")
-    if st.button("Save File"):
-        if savepath:
-            try:
-                data.to_csv(savepath, index=False)
-                st.success("File Saved Successfully ദ്ദി(˵ •̀ ᴗ - ˵ ) ✧")
-            except Exception as e:
-                st.error(f"Failed to save file:{e}")
-
-c = st.container()
-tab1, tab2 = st.tabs(["Single Prediction", "Predict Data using uploaded CSV"])
-with tab1.container(): 
-    App1()
-with tab2.container():
-    App2()
+with row3[0]:
+     st.subheader("====================================================================")
+with row4[0]:
+     st.subheader("Predict Data using uploaded CSV")
+     App2()
 

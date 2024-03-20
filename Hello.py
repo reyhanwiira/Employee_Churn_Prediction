@@ -7,6 +7,8 @@ st.set_page_config(
 
 st.write("# Welcome to My Demo App 🤗")
 
+st.sidebar.button("Get Started")
+
 st.sidebar.success("Select an App you want to try.")
 
 st.markdown(

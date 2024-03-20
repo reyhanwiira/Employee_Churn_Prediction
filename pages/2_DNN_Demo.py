@@ -4,9 +4,9 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import torch
-
 import torch
 import torch.nn as nn
+import time
 
 class DNN(nn.Module):
     def __init__(self, input_size, hidden_size1, hidden_size2):
@@ -63,7 +63,7 @@ sample = pd.DataFrame(sample)
 def App1():
     col1, col2 = st.columns(2)
     with col1.container():
-        with st.container():
+        with st.container(height=500):
             st.write("Input your employees")
             # Define Unique Key for sliders
             age_slider_key = "age_slider"
@@ -152,6 +152,8 @@ def App1():
         # Create a button to trigger prediction
         if st.button("Predict"):
             # Preprocess user input
+            with st.spinner('Wait for it...'):
+                time.sleep(5)
             
             preprocessed_input = preprocess_input(input_tensor)
 
@@ -167,6 +169,12 @@ def App1():
 def App2():
     st.text("Download this sample for testing your the model below")
     st.dataframe(sample)
+    # Create a button to go to link
+    # Define the URL
+    url = "https://www.kaggle.com/datasets/jash312/hr-employee-attrition-datasets?select=HR+Employee+data.csv"
+
+    # Create a clickable link using markdown
+    #st.markdown(f"[Link to HR Employee Attrition Dataset]({url})")
     # Button to upload CSV file
     uploaded_file = st.file_uploader("Choose a CSV file", type=["csv"])
     if uploaded_file is not None:
