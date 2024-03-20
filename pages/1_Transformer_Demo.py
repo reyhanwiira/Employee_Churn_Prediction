@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import pickle
 import time
+import requests
 
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 
@@ -33,20 +34,43 @@ df = pd.DataFrame({'Age',
 })
       
 def App2():
-    def process_data(data):
+    def process_data(dataset):
         # Load the model and perform predictions
         with open('./pages/pipeline.pkl', 'rb') as f:
             pipeline = pickle.load(f)
-        
-        result = pipeline.predict(data)
+
+            # # Select the categorical columns for one-hot encoding
+            # categorical_columns = [
+
+            # ]
+
+            # # Drop the original categorical columns from the DataFrame
+            # df_encoded = df.drop(columns=categorical_columns)
+
+            # # Initialize LabelEncoder
+            # label_encoder = LabelEncoder()
+
+            # # Encode 'Gender', 'OverTime', and 'Attrition'
+            # df_encoded['Attrition_encoded'] = label_encoder.fit_transform(dataset['Attrition'])
+
+            # # Convert to int64
+            # # df_encoded['Attrition_encoded'] = df_encoded['Attrition_encoded'].astype('int64')
+
+            # # Rename 'Attrition_encoded', 'Gender_encoded', 'OverTime_encoded' to 'Attrition', 'Gender', 'OverTime'
+            # final_df = df_encoded.rename(columns={'Attrition_encoded': 'Attrition'})
+
+            # # Drop the encoded columns
+            # final_df.drop(columns=['Attrition'], inplace=True)
+
+        result = pipeline.predict(dataset)
         
         # Assign predictions based on result
         y_pred = ["Your employee may leave the company. (╥﹏╥)" if pred == 1 
                   else "Your employee may stay in the company. ⸜(｡ ˃ ᵕ ˂ )⸝♡" for pred in result]
         
         # Add predicted target to the data
-        data['Predicted_target'] = y_pred
-        return data
+        dataset['Predicted_target'] = y_pred
+        return dataset
     
     # Streamlit app
     sample =   {'Age':[28, 30, 35, 40, 45, 50, 18, 20, 22],
@@ -75,48 +99,37 @@ def App2():
     sample = pd.DataFrame(sample)
     st.dataframe(sample)
 
-    # Create a button to go to link
-    # Define the URL
-    url = "./pages/HR Employee data.csv"
-
-    # Create a clickable link using markdown
-    st.markdown(f"[Link to HR Employee Attrition Dataset]({url})")
+    # Function to download data from GitHub
+    def download_data_from_github(url):
+        response = requests.get(url)
+        return response.content
+    
+    # GitHub URL of the data file
+    github_url = "https://github.com/reyhanwiira/Employee_Churn_Prediction/blob/main/pages/HR%20Employee%20data.csv"
+    
+    # Button to trigger download
+    if st.button("Download Data"):
+        st.write("Downloading data...")
+        data = download_data_from_github(github_url)
+        
+        # Offer the data file as a download link
+        st.download_button(
+            label="Click here to download",
+            data=data,
+            file_name="data.csv",
+            mime="text/csv"
+        )
+        st.success("Download complete!")
 
     # Button to upload CSV file
     uploaded_file = st.file_uploader("Choose a CSV file", type=["csv"])
     if uploaded_file is not None:
         try:
             # Load data from CSV
-            data = pd.read_csv(uploaded_file)
+            dataset = pd.read_csv(uploaded_file)
 
-            # Checking the dataset if there any duplicate values
-            data.duplicated().any()
-            # Show the duplicates value
-            data[data.duplicated()]
-            # Drop the duplicate value
-            dataset = data.drop_duplicates()
-            
             # Process the data
             dataset.rename(columns={'JobLevel_updated': 'JobLevel'}, inplace=True)
-
-            label_encoders = LabelEncoder()
-
-            dataset['BusinessTravel_encoded'] = label_encoders.fit_transform(dataset['BusinessTravel'])
-            dataset['Department_encoded'] = label_encoders.fit_transform(dataset['Department'])
-            dataset['EducationField_encoded'] = label_encoders.fit_transform(dataset['EducationField'])
-            dataset['Gender_encoded'] = label_encoders.fit_transform(dataset['Gender'])
-            dataset['MaritalStatus_encoded'] = label_encoders.fit_transform(dataset['MaritalStatus'])
-            dataset['OverTime_encoded'] = label_encoders.fit_transform(dataset['OverTime'])
-            dataset['Attrition_encoded'] = label_encoders.fit_transform(dataset['Attrition'])
-
-            # Convert to int64
-            dataset['Gender'] = dataset['Gender_encoded'].astype('int64')
-            dataset['OverTime'] = dataset['OverTime_encoded'].astype('int64')
-            dataset['Attrition'] = dataset['Attrition_encoded'].astype('int64')
-            dataset['BusinessTravel'] = dataset['BusinessTravel_encoded'].astype('int64')
-            dataset['Department'] = dataset['Department_encoded'].astype('int64')
-            dataset['EducationField'] = dataset['EducationField_encoded'].astype('int64')
-            dataset['MaritalStatus'] = dataset['MaritalStatus_encoded'].astype('int64')
 
             processed_data = process_data(dataset)
             
