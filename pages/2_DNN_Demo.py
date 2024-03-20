@@ -61,7 +61,7 @@ st.write("This is a simple Machine Learning Web App to predict employee churn an
 sample = pd.DataFrame(sample)
 
 def App1():
-    col1, col2 = st.columns(2, gap="small")
+    col1, col2 = st.columns([2,8])
     with col1.container(height=500):
         with st.container():
             st.write("Input your employees")
@@ -145,7 +145,7 @@ def App1():
             # Ensure model is in evaluation mode
             model.eval()
 
-    with col2.container(height=250):
+    with col2.container(height=220):
         st.write("Dataframe Preview")
         st.dataframe(input_df)
 
@@ -203,7 +203,7 @@ def App2():
             threshold = 0.5
             with torch.no_grad():
                 preds = model(input_tensor)
-                y_pred = ["An employee may leave the organization." if pred > threshold else "An employee may stay with the organization." for pred in preds]
+                y_pred = ["Your employee may leave the company. (╥﹏╥)" if pred > threshold else "Your employee may stay in the company. ⸜(｡ ˃ ᵕ ˂ )⸝♡" for pred in preds]
 
             data['Predicted_target'] = y_pred
 

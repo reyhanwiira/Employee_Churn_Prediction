@@ -36,7 +36,6 @@ def App1():
         pipeline = pickle.load(f)
 
     # Function to show prediction result
-    @st.cache_data
     def show_prediction():
         p1 = float(e1)
         p2 = str(e2)
@@ -92,7 +91,7 @@ def App1():
         else:
             st.write("An employee may stay with the organization.")
     
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns([2,8])
     with col1.container(height=500):
         with st.container():
             e1 = st.slider("Age", 18, 60, 30)
@@ -133,7 +132,7 @@ def App1():
             e8 = st.selectbox("Over Time", options8)
             e8 = {'No': 0, 'Yes': 1}[e8]  # Label encoding
 
-    with col2.container(height=250):
+    with col2.container(height=220):
         user_inputs = {
                         'Age': [e1],
                         'BusinessTravel': [e2],
@@ -176,8 +175,8 @@ def App2():
         result = pipeline.predict(data)
         
         # Assign predictions based on result
-        y_pred = ["An employee may leave the organization." if pred == 1 
-                  else "An employee may stay with the organization." for pred in result]
+        y_pred = ["Your employee may leave the company. (╥﹏╥)" if pred == 1 
+                  else "Your employee may stay in the company. ⸜(｡ ˃ ᵕ ˂ )⸝♡" for pred in result]
         
         # Add predicted target to the data
         data['Predicted_target'] = y_pred
@@ -236,9 +235,10 @@ def App2():
             st.write(processed_data)
             st.write("Saving the processed data...")
             processed_data.to_csv('processed_data.csv', index=False)
-            st.success("Data saved successfully!")
+            st.success("Data saved successfully! ദ്ദി(˵ •̀ ᴗ - ˵ ) ✧")
         except Exception as e:
             st.error(f"Failed to open file: {e}")
+
 
 def save_file(data):
     savepath = st.text_input("Enter file path to save (include.csv extension)")
@@ -246,7 +246,7 @@ def save_file(data):
         if savepath:
             try:
                 data.to_csv(savepath, index=False)
-                st.success("File Saved Successfully")
+                st.success("File Saved Successfully ദ്ദി(˵ •̀ ᴗ - ˵ ) ✧")
             except Exception as e:
                 st.error(f"Failed to save file:{e}")
 

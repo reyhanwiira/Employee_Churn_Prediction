@@ -1,11 +1,11 @@
 import streamlit as st
 
 st.set_page_config(
-    page_title="Hello",
+    page_title="Home",
     page_icon="👋",
 )
 
-st.write("# Welcome to My Demo App! 👋")
+st.write("# Welcome to My Demo App 🤗")
 
 st.sidebar.success("Select an App you want to try.")
 
