@@ -63,7 +63,7 @@ sample = pd.DataFrame(sample)
 def App1():
     col1, col2 = st.columns(2)
     with col1.container():
-        with st.container(height=500):
+        with st.container(500):
             st.write("Input your employees")
             # Define Unique Key for sliders
             age_slider_key = "age_slider"
