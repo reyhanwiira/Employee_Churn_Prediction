@@ -2,7 +2,7 @@ streamlit==1.16.0
 st-pages==0.4.4
 pandas==1.5.1 
 scipy==1.7.3
-numpy==1.24.1
+numpy==1.20.3
 scikit-learn==1.4.1.post1
 pandas==1.5.1
 torch==2.2.1
