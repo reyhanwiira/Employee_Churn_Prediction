@@ -1,8 +1,10 @@
+from sklearn.preprocessing import MinMaxScaler
+
 import streamlit as st
 import pandas as pd
 import numpy as np
 # import torch
-from sklearn.preprocessing import MinMaxScaler
+
 
 import torch
 import torch.nn as nn
