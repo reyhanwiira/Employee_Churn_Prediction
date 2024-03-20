@@ -105,10 +105,10 @@ def App2():
         return response.content
     
     # GitHub URL of the data file
-    github_url = "https://github.com/reyhanwiira/Employee_Churn_Prediction/blob/main/pages/HR%20Employee%20data.csv"
+    github_url = "https://github.com/reyhanwiira/Employee_Churn_Prediction/blob/main/pages/HR_EmployeeData.csv"
     
     # Button to trigger download
-    if st.button("Download Data"):
+    if st.button("Download Sample CSV File"):
         st.write("Downloading data...")
         data = download_data_from_github(github_url)
         
