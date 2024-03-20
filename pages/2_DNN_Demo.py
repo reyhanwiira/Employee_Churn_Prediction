@@ -62,7 +62,7 @@ sample = pd.DataFrame(sample)
 
 def App1():
     col1, col2 = st.columns(2)
-    with col1.container(height=500):
+    with col1.container():
         with st.container():
             st.write("Input your employees")
             # Define Unique Key for sliders
@@ -145,7 +145,7 @@ def App1():
             # Ensure model is in evaluation mode
             model.eval()
 
-    with col2.container(height=220):
+    with col2.container():
         st.write("Dataframe Preview")
         st.dataframe(input_df)
 

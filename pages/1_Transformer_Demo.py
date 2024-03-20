@@ -92,7 +92,7 @@ def App1():
             st.write("An employee may stay with the organization.")
     
     col1, col2 = st.columns(2)
-    with col1.container(height=500):
+    with col1.container():
         with st.container():
             e1 = st.slider("Age", 18, 60, 30)
             e9 = st.slider("Job Involvement", 1, 4, 2)
@@ -132,7 +132,7 @@ def App1():
             e8 = st.selectbox("Over Time", options8)
             e8 = {'No': 0, 'Yes': 1}[e8]  # Label encoding
 
-    with col2.container(height=220):
+    with col2.container():
         user_inputs = {
                         'Age': [e1],
                         'BusinessTravel': [e2],
