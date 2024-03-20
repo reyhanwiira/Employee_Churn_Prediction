@@ -91,7 +91,7 @@ def App1():
         else:
             st.write("An employee may stay with the organization.")
     
-    col1, col2 = st.columns([2,8])
+    col1, col2 = st.columns(2)
     with col1.container(height=500):
         with st.container():
             e1 = st.slider("Age", 18, 60, 30)
@@ -223,9 +223,6 @@ def App2():
         try:
             # Load data from CSV
             data = pd.read_csv(uploaded_file)
-            data.columns = data.columns.str.replace('\n', '')
-            data.rename(columns={'Departments ': 'departments'}, inplace=True)
-            data = data.drop_duplicates()
             
             # Process the data
             processed_data = process_data(data)

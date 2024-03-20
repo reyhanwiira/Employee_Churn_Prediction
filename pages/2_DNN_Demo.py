@@ -61,7 +61,7 @@ st.write("This is a simple Machine Learning Web App to predict employee churn an
 sample = pd.DataFrame(sample)
 
 def App1():
-    col1, col2 = st.columns([2,8])
+    col1, col2 = st.columns(2)
     with col1.container(height=500):
         with st.container():
             st.write("Input your employees")
