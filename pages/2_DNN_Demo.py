@@ -5,9 +5,9 @@ import pandas as pd
 import numpy as np
 import torch
 
-
 import torch
 import torch.nn as nn
+
 class DNN(nn.Module):
     def __init__(self, input_size, hidden_size1, hidden_size2):
         super(DNN, self).__init__()
@@ -51,6 +51,11 @@ sample = {
          'RelationshipSatisfaction': [2, 4, 1, 3, 3, 3],
          'EnvironmentSatisfaction': [2, 4, 1, 3, 3, 3],
 }
+
+st.set_page_config(page_title="Employee Churn Prediction", page_icon=":bar_chart:", layout="wide")
+st.title("Employee Churn Prediction")
+st.subheader("Predict Employee Churn using DNN Architecture")
+st.write("This is a simple Machine Learning Web App to predict employee churn and retain your best employees")
 
 # Create DataFrame
 sample = pd.DataFrame(sample)
@@ -230,18 +235,10 @@ def predict_employee_churn(input_data):
         prediction = torch.round(torch.sigmoid(output)).item()
         return prediction
 
-# Streamlit app
-def main():
-    st.set_page_config(page_title="Employee Churn Prediction", page_icon=":bar_chart:", layout="wide")
-    st.title("Employee Churn Prediction")
-    st.subheader("Predict Employee Churn using DNN Architecture")
-    st.write("This is a simple Machine Learning Web App to predict employee churn and retain your best employees")
-    c = st.container()
-    tab1, tab2 = st.tabs(["Single Prediction", "Predict Data using uploaded CSV"])
-    with tab1.container(): 
-        App1()
-    with tab2.container():
-        App2()
+c = st.container()
+tab1, tab2 = st.tabs(["Single Prediction", "Predict Data using uploaded CSV"])
+with tab1.container(): 
+    App1()
+with tab2.container():
+    App2()
 
-if __name__ == "__main__":
-    main()

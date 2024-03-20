@@ -5,10 +5,8 @@ import pickle
 st.set_page_config(page_title="Transformer Demo", page_icon="🐍", layout="wide")
 
 st.title("Employee Churn Prediction")
-st.markdown("Predict Employee Churn using Transformer Pipeline")
-
+st.subheader("Predict Employee Churn using Transformer Pipeline")
 st.write("This is a simple Machine Learning Web App to predict employee churn and retain your best employees")
-
 
 df = pd.DataFrame({'Age',
                     'BusinessTravel',
@@ -38,6 +36,7 @@ def App1():
         pipeline = pickle.load(f)
 
     # Function to show prediction result
+    @st.cache_data
     def show_prediction():
         p1 = float(e1)
         p2 = str(e2)
@@ -93,7 +92,7 @@ def App1():
         else:
             st.write("An employee may stay with the organization.")
     
-    col1, col2 = st.columns(2, gap="small")
+    col1, col2 = st.columns(2)
     with col1.container(height=500):
         with st.container():
             e1 = st.slider("Age", 18, 60, 30)
@@ -133,7 +132,6 @@ def App1():
             options8 = ('No','Yes')
             e8 = st.selectbox("Over Time", options8)
             e8 = {'No': 0, 'Yes': 1}[e8]  # Label encoding
-
 
     with col2.container(height=250):
         user_inputs = {
