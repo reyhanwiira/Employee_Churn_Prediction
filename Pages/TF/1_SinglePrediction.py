@@ -115,7 +115,7 @@ row2 = st.columns(1)
 
 with row1[0]:
     st.subheader("Single Prediction")
-    with st.container(height=300):
+    with st.container():
             e1 = st.slider("Age", 18, 60, 30)
             e9 = st.slider("Job Involvement", 1, 4, 2)
             e10 = st.slider("Performance Score", 1, 5, 3)
