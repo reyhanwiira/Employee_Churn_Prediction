@@ -1,0 +1,14 @@
+[[pages]]
+path = "Hello.py"
+name = "Home"
+icon = "🏠"
+
+[[pages]]
+path = "Pages/TF/1_SinglePrediction.py"
+name = "Single Prediction"
+icon = ""
+
+[[pages]]
+path = "Pages/TF/2_MultiplePrediction.py"
+name = "Multiple Prediction"
+icon = ""
