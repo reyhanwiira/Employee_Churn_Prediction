@@ -27,9 +27,7 @@ with row2[0]:
         "JobSatisfaction", "RelationshipSatisfaction", "EnvironmentSatisfaction"
         ])
 
-    editable_df = st.data_editor(
-        initial_df, 
-        num_rows="dynamic",
+    editable_df = st.data_editor(initial_df, num_rows="dynamic",
         column_config={
             "Age": st.column_config.NumberColumn(
                 "Age",
