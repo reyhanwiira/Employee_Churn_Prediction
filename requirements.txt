@@ -1,7 +1,9 @@
-streamlit==1.16.0
-st-pages==0.4.4
+fastapi==0.109.0
 pandas==1.5.1 
+pydantic==2.5.3
+pydantic_core==2.14.6
 numpy==1.20.3
 scikit-learn==1.4.1.post1
-pandas==1.5.1
+streamlit==1.16.0
+st-pages==0.4.4
 torch==2.2.1
