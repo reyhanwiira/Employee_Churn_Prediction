@@ -110,12 +110,11 @@ def show_prediction():
         else:
             st.write("An employee may stay with the organization.")
 
-row1 = st.columns(1)
-row2 = st.columns(1)
+row1 = st.columns([2,7])
 
 with row1[0]:
     st.subheader("Single Prediction")
-    with st.container():
+    with st.container(height=450):
             e1 = st.slider("Age", 18, 60, 30)
             e9 = st.slider("Job Involvement", 1, 4, 2)
             e10 = st.slider("Performance Score", 1, 5, 3)
@@ -153,7 +152,7 @@ with row1[0]:
             options8 = ('No','Yes')
             e8 = st.selectbox("Over Time", options8)
             e8 = {'No': 0, 'Yes': 1}[e8]  # Label encoding  
-with row2[0]:
+with row1[1]:
         user_inputs = {
                         'Age': [e1],
                         'BusinessTravel': [e2],
