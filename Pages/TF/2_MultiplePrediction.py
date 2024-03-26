@@ -157,7 +157,7 @@ with row2[0]:
 
     def process_data(data):
         # Load the pre-trained model
-        with open('./ML_Models/pipeline.pkl', 'rb') as f:
+        with open('./Models/pipeline.pkl', 'rb') as f:
             pipeline = pickle.load(f)
 
         # Check if all required columns are present

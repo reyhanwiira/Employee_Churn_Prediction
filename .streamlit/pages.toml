@@ -12,8 +12,3 @@ icon = ""
 path = "Pages/TF/2_MultiplePrediction.py"
 name = "Multiple Prediction"
 icon = ""
-
-[[pages]]
-path = "Pages/DNN/2_DNN_Demo.py"
-name = "DNN Demo"
-icon = ""

@@ -51,7 +51,7 @@ def save_file(data):
                 st.error(f"Failed to save file:{e}")
 
 # Load the pre-trained model
-with open('./ML_Models/pipeline.pkl','rb') as f:
+with open('./Models/pipeline.pkl','rb') as f:
     pipeline = pickle.load(f)
 
 # Function to show prediction result
