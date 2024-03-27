@@ -13,12 +13,14 @@ st.write("Disclaimer: Don't rely too much on these results, expert judgment is s
 
 row1 = st.columns(1)
 row2 = st.columns(1)
+row3 = st.columns(1)
+row4 = st.columns(1)
 
 with row1[0]:
     st.subheader("Multiple Prediction")
 with row2[0]:
 
-    initial_df = pd.DataFrame(columns=[
+    df = pd.DataFrame(columns=[
         "Age", "BusinessTravel", "Department", "EducationField", "Gender",
         "MaritalStatus", "JobLevel", "OverTime", "JobInvolvement",
         "PerformanceRating", "MonthlyIncome", "TotalWorkingYears",
@@ -27,7 +29,7 @@ with row2[0]:
         "JobSatisfaction", "RelationshipSatisfaction", "EnvironmentSatisfaction"
         ])
 
-    editable_df = st.data_editor(initial_df, num_rows="dynamic",
+    editable_df = st.data_editor(df, num_rows="dynamic",
         column_config={
             "Age": st.column_config.NumberColumn(
                 "Age",
@@ -176,6 +178,13 @@ with row2[0]:
         data['Gender'] = editable_df['Gender'].map({'Female': 0, 'Male': 1})
         data['OverTime'] = editable_df['OverTime'].map({'No': 0, 'Yes': 1})
 
+        # Exclude specific columns
+        excluded_columns = ['Attrition', 
+                            'LeavingYear',
+                            'Reason',
+                            'RelievingStatus']  # Example: Columns to be excluded
+        data = data.drop(columns=excluded_columns, errors='ignore')
+
         # Perform predictions
         result = pipeline.predict(data)
                 
@@ -188,37 +197,117 @@ with row2[0]:
 
         return data
 
-# Create a button to trigger prediction
-if st.button("Predict", key="predictApp2"):
-    # Preprocess user input
-    with st.spinner("Processing data..."):
-        time.sleep(2)
+    # Create a button to trigger prediction
+    if st.button("Predict", key="predictApp2"):
+        # Preprocess user input
+        with st.spinner("Processing data..."):
+            time.sleep(2)
 
-        # Access all rows of the DataFrame and convert them to a list of dictionaries
-        user_input_values_list = editable_df.to_dict(orient='records')
+            # Access all rows of the DataFrame and convert them to a list of dictionaries
+            user_input_values_list = editable_df.to_dict(orient='records')
 
-        # Initialize an empty list to store processed data
-        processed_data_list = []
+            # Initialize an empty list to store processed data
+            processed_data_list = []
 
-        # Iterate over each row and process them individually
-        for user_input_values in user_input_values_list:
-            try:
-                # Convert the dictionary to a DataFrame
-                user_input_df = pd.DataFrame([user_input_values])
+            # Iterate over each row and process them individually
+            for user_input_values in user_input_values_list:
+                try:
+                    # Convert the dictionary to a DataFrame
+                    user_input_df = pd.DataFrame([user_input_values])
 
-                # Process the data
-                processed_data = process_data(user_input_df)
+                    # Process the data
+                    processed_data = process_data(user_input_df)
 
-                # Append the processed data to the list
-                processed_data_list.append(processed_data)
+                    # Append the processed data to the list
+                    processed_data_list.append(processed_data)
 
-            except Exception as e:
-                st.error(f"Failed to process data: {e}")
+                except Exception as e:
+                    st.error(f"Failed to process data: {e}")
 
-        if processed_data_list:
-            # Concatenate processed data from all rows
-            processed_data_df = pd.concat(processed_data_list)
+            if processed_data_list:
+                # Concatenate processed data from all rows
+                processed_data_df = pd.concat(processed_data_list)
+                st.write("Processed Data:")
+                st.dataframe(processed_data_df)
+            else:
+                st.error("No data processed.")
+
+with row3[0]:
+    st.subheader("Multiple Prediction with CSV")
+with row4[0]:
+    # Button to upload CSV file
+    st.text("If you tired by inputing data manually, you can upload your CSV file here.")
+    uploaded_file = st.file_uploader("Choose a CSV file", type=["csv"])
+    
+    # if uploaded_file is not None:
+    #     try:
+    #         # Load data from CSV
+    #         data = pd.read_csv(uploaded_file)
+    #         data = data.drop_duplicates()
+    #         # Rename JobLevel_updated to JobLevel
+    #         data = data.rename(columns={'JobLevel_updated': 'JobLevel'})
+
+    #         # Process the data
+    #         processed_data = process_data(data)
+            
+    #         # Save the processed data to a CSV file
+    #         st.write("Processed Data:")
+    #         st.write(processed_data)
+    #         st.write("Saving the processed data...")
+    #         processed_data.to_csv('processed_data.csv', index=False)
+    #         st.success("Data saved successfully!")
+    #     except Exception as e:
+    #         st.error(f"Failed to open file: {e}")
+
+    if uploaded_file is not None:
+        try:
+            # Load data from CSV
+            data = pd.read_csv(uploaded_file)
+            data = data.drop_duplicates()
+            # Rename JobLevel_updated to JobLevel
+            data = data.rename(columns={'JobLevel_updated': 'JobLevel'})
+
+            # Process the data
+            processed_data = process_data(data)
+            
+            # Count the number of employees predicted to leave
+            leave_count = processed_data['Output'].value_counts().get("An employee may leave the organization.", 0)
+            total_count = len(processed_data)
+            
             st.write("Processed Data:")
-            st.dataframe(processed_data_df)
-        else:
-            st.error("No data processed.")
+            st.write(processed_data)
+            
+            st.write(f"Out of {total_count} employees:")
+            st.write(f"- {leave_count} employees may leave the organization.")
+            st.write(f"- {total_count - leave_count} employees may stay with the organization.")
+
+            # Filter the processed data for employees predicted to leave
+            leave_data = processed_data[processed_data['Output'] == "An employee may leave the organization."]
+
+            # Count occurrences of low values in specified columns
+            low_worklife_balance_count = (leave_data['WorkLifeBalance'] == 1).sum()
+            low_job_satisfaction_count = (leave_data['JobSatisfaction'] == 1).sum()
+            low_environment_satisfaction_count = (leave_data['EnvironmentSatisfaction'] == 1).sum()
+            low_relationship_satisfaction_count = (leave_data['RelationshipSatisfaction'] == 1).sum()
+
+            # Display the counts
+            st.write("Counts of employees predicted to leave with low WorkLifeBalance, Job, Environment, and Relationship Satisfaction:")
+            st.write(f"- Low WorkLifeBalance: {low_worklife_balance_count} employees")
+            st.write(f"- Low Job Satisfaction: {low_job_satisfaction_count} employees")
+            st.write(f"- Low Environment Satisfaction: {low_environment_satisfaction_count} employees")
+            st.write(f"- Low Relationship Satisfaction: {low_relationship_satisfaction_count} employees")
+
+            # Provide recommendations based on the leave count
+            if leave_count > 0:
+                st.write("Recommendations:")
+                st.write("- Conduct exit interviews to understand reasons for leaving.")
+                st.write("- Implement retention strategies such as improving work-life balance, offering career development opportunities, etc.")
+            else:
+                st.write("No employees predicted to leave. No specific recommendations at this time.")
+
+            st.write("Saving the processed data...")
+            processed_data.to_csv('processed_data.csv', index=False)
+            st.success("Data saved successfully!")
+        except Exception as e:
+            st.error(f"Failed to open file: {e}")
+
