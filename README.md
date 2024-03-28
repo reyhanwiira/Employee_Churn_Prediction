@@ -1,5 +1,5 @@
 <h1 align="center">Employee Churn Prediction App</h1>
-<div align= "center"><img src="" />
+<div align= "center">
   <h4>This is a simple Machine Learning Web App to predict employee churn and retain your best employees using transformer pipeline approach.</h4>
 </div>
 
