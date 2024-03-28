@@ -38,6 +38,7 @@ scikit-learn==1.4.1.post1
 streamlit==1.32.2
 st-pages==0.4.4
 
+## :whale: Setup
 ### Use the hosted version on Streamlit Cloud
 http://employee-churn-predict.streamlit.app/
 
